@@ -42,6 +42,9 @@ import ERPReturns from "./backpages/erp/ERPReturns.jsx";
 import Finance from "./backpages/erp/Finance.jsx";
 import Inventory from "./backpages/erp/Inventory.jsx";
 import Sales from "./backpages/erp/Sales.jsx";
+// Coupon 相關頁面
+import CouponManage from "./backpages/erp/CouponManage.jsx";
+import CouponForm from "./backpages/erp/CouponForm.jsx"; // 取消註解
 // 使用者角色和權限
 import UsersManage from "./backpages/users/usersManage.jsx";
 import UsersLogs from "./backpages/users/usersLogs.jsx";
@@ -165,6 +168,10 @@ const router = createBrowserRouter([
         path: "sales",
         element: <Sales />,
       },
+      // Coupon 路由
+      { path: "coupons", element: <CouponManage /> },
+      { path: "coupon/new", element: <CouponForm /> }, // 取消註解
+      { path: "coupon/edit/:couponId", element: <CouponForm /> }, // 取消註解
     ],
   },
   {

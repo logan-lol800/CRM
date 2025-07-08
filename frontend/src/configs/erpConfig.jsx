@@ -1,8 +1,9 @@
 import { AppstoreOutlined ,
-  UserOutlined, 
-  RobotOutlined, 
-  BarChartOutlined, 
-  DesktopOutlined
+  UserOutlined,
+  RobotOutlined,
+  BarChartOutlined,
+  DesktopOutlined,
+  GiftOutlined, // 新增圖示
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -58,6 +59,11 @@ const erpConfig = {
         path: '/erp/finance',
         name: '財務管理',
         icon: <UserOutlined />,
+      },
+      {
+        path: '/erp/coupons', // 優惠券列表頁路徑
+        name: '優惠券管理',
+        icon: <GiftOutlined />, // 使用禮物圖示
       },
     ],
   },
