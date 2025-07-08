@@ -2,6 +2,9 @@ package com.example.demo.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EntityListeners(AuditingEntityListener.class) //TODO(joshkuei): Add this listener
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +40,14 @@ public class User {
     // 還是保留，單純方便gui查看角色roleName
     private String roleName;
 
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false) //TODO(joshkuei): Use annotation to create
     private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false) //TODO(joshkuei): Use annotation to create
     private LocalDateTime updatedAt;
+
     private LocalDateTime lastLogin;
 
     private LocalDate accessStartDate;
@@ -62,6 +72,7 @@ public class User {
 
 
 
+    @Builder.Default
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_authority",
@@ -70,6 +81,7 @@ public class User {
     )
     private List<Authority> authorities = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLogAction> logactions = new ArrayList<>();
 }

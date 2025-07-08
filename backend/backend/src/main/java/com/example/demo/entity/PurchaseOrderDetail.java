@@ -32,11 +32,8 @@ public class PurchaseOrderDetail {
     @JsonBackReference
     private PurchaseOrder purchaseOrder;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", insertable = false, updatable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column(name = "quantity", nullable = false, precision = 18, scale = 2)
@@ -45,8 +42,9 @@ public class PurchaseOrderDetail {
     @Column(name = "unit_price", nullable = false, precision = 18, scale = 2)
     private BigDecimal unitPrice;
 
-    @Column(name = "warehouse_id", nullable = false)
-    private Long warehouseId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    private Warehouse warehouse;
 
     @Column(name = "item_amount", nullable = false, precision = 18, scale = 2)
     private BigDecimal itemAmount;
@@ -60,7 +58,7 @@ public class PurchaseOrderDetail {
     @Column(name = "is_gift", nullable = false)
     private boolean isGift = false;
 
-    @Column(name = "created_by", nullable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     private Long createdBy;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -75,4 +73,24 @@ public class PurchaseOrderDetail {
     public String getProductName() {
         return product != null ? product.getName() : null;
     }
+
+    // Maintain backward compatibility with code using productId
+    public Long getProductId() {
+        return product != null ? product.getProductId() : null;
+    }
+
+//    public void setProductId(Long productId) {
+//        // This method intentionally left empty to maintain compatibility
+//        // The product relationship should be set directly instead
+//    }
+
+    // Maintain backward compatibility with code using warehouseId
+    public Long getWarehouseId() {
+        return warehouse != null ? warehouse.getWarehouseId() : null;
+    }
+
+//    public void setWarehouseId(Long warehouseId) {
+//        // This method intentionally left empty to maintain compatibility
+//        // The warehouse relationship should be set directly instead
+//    }
 }

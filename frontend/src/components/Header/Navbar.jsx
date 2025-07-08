@@ -3,27 +3,32 @@ import { Link, useLocation } from "react-router-dom";
 import useCartStore from "../../stores/cartStore";
 import CartModal from "./CartModel";
 import { FaUserCircle, FaShoppingCart, FaBars, FaTimes } from "react-icons/fa";
-import logo from "../../assets/logo2.png";
+import logo from "../../assets/logo3.png";
 
 const Navbar = () => {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  const { toggleCart, getTotalQuantity } = useCartStore();
-  const cartItemCount = getTotalQuantity();
+  const cartItemCount = useCartStore((state) =>
+  state.items.reduce((total, item) => total + (item.quantity || 0), 0)
+  );
+
+  const toggleCart = useCartStore((state) => state.toggleCart);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
   const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
   return (
     <>
-      <nav className="
+      <nav
+        className="
         fixed top-4 left-1/2 transform -translate-x-1/2 z-50 
-        w-[95%] max-w-7xl px-6 py-3 
+        w-[85.2%] max-w-8xl px-6 py-3 
         bg-white/30 backdrop-blur-md 
         border border-white/20 shadow-md 
         rounded-full transition-all duration-300
-      ">
+      "
+      >
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
@@ -43,17 +48,20 @@ const Navbar = () => {
                 to={to}
                 className="relative group transition-colors duration-300"
               >
-                <span className="hover:text-logo-tan">{label}</span>
-                <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-logo-tan transition-all duration-300 group-hover:w-full"></span>
+                <span className="hover:text-gray-600">{label}</span>
+                <span className="absolute left-0 -bottom-1 h-[2px] w-0 bg-logo-lightBlue transition-all duration-300 group-hover:w-full"></span>
               </Link>
             ))}
 
-            <Link to="/login" className="text-2xl hover:text-logo-tan">
+            <Link
+              to="/login"
+              className="text-gray-700 text-2xl hover:text-logo-blue"
+            >
               <FaUserCircle />
             </Link>
 
             <button onClick={toggleCart} className="relative">
-              <FaShoppingCart className="text-2xl hover:text-logo-tan" />
+              <FaShoppingCart className="text-gray-700 text-2xl hover:text-logo-blue" />
               {cartItemCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold h-5 w-5 flex items-center justify-center rounded-full shadow ring-2 ring-white">
                   {cartItemCount > 99 ? "99+" : cartItemCount}
@@ -73,7 +81,7 @@ const Navbar = () => {
 
       {/* 手機選單（滑出 + 遮罩） */}
       <div
-        className={`fixed inset-0 z-[45] transition-all duration-300 md:hidden ${
+        className={`fixed inset-0 z-[55] transition-all duration-300 md:hidden ${
           isMobileMenuOpen ? "visible opacity-100" : "invisible opacity-0"
         }`}
       >
@@ -99,11 +107,39 @@ const Navbar = () => {
           </div>
 
           <div className="px-4 py-4 space-y-4">
-            <Link to="/store" onClick={closeMobileMenu} className="block hover:text-logo-lightBlue">精選商店</Link>
-            <Link to="/about" onClick={closeMobileMenu} className="block hover:text-logo-lightBlue">關於良野</Link>
-            <Link to="/news" onClick={closeMobileMenu} className="block hover:text-logo-lightBlue">最新消息</Link>
-            <Link to="/contact" onClick={closeMobileMenu} className="block hover:text-logo-lightBlue">聯絡我們</Link>
-            <Link to="/login" onClick={closeMobileMenu} className="flex hover:text-logo-lightBlue items-center">
+            <Link
+              to="/store"
+              onClick={closeMobileMenu}
+              className="block hover:text-logo-lightBlue"
+            >
+              精選商店
+            </Link>
+            <Link
+              to="/about"
+              onClick={closeMobileMenu}
+              className="block hover:text-logo-lightBlue"
+            >
+              關於良野
+            </Link>
+            <Link
+              to="/news"
+              onClick={closeMobileMenu}
+              className="block hover:text-logo-lightBlue"
+            >
+              最新消息
+            </Link>
+            <Link
+              to="/contact"
+              onClick={closeMobileMenu}
+              className="block hover:text-logo-lightBlue"
+            >
+              聯絡我們
+            </Link>
+            <Link
+              to="/login"
+              onClick={closeMobileMenu}
+              className="flex hover:text-logo-lightBlue items-center"
+            >
               <FaUserCircle className="mr-2" /> 會員登入
             </Link>
             <button

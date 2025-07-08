@@ -56,6 +56,7 @@ public class CouponTemplate {
     private Integer totalQuantity; // 總發行量上限
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer issuedQuantity = 0; // 已發行數量
 
     @Enumerated(EnumType.STRING)

@@ -56,7 +56,7 @@ public class OpportunityFaker {
         return OpportunityRequest.builder()
                 .opportunityName(faker.company().industry() + " - " + faker.commerce().productName() + " 商機")
                 .description(faker.lorem().paragraph(3))
-                .expectedValue(BigDecimal.valueOf(faker.number().randomDouble(2, 1000, 500000)))
+                .expectedValue(BigDecimal.valueOf(faker.number().randomDouble(2, 1000, 50000)))
                 .closeDate(closeDate)
                 .stage(stages.get(random.nextInt(stages.size())))
                 .status(statuses.get(random.nextInt(statuses.size())))

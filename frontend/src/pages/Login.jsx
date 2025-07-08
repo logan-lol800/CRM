@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
 import { FaEye, FaEyeSlash, FaFacebook } from "react-icons/fa";
-import { SiLine } from "react-icons/si";
 import { Link, useNavigate } from "react-router-dom";
 import useUserStore from "../stores/userStore";
 
 function Login() {
-  const [email, setEmail] = useState("test@example.com");
-  const [password, setPassword] = useState("123456");
+  const [account, setAccount] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -24,8 +23,8 @@ function Login() {
     e.preventDefault();
     setError(null);
 
-    try {
-      await login({ email, password });
+    try {     
+      await login({ account, password });
       navigate("/User");
     } catch (err) {
       setError("登入失敗，請確認帳號密碼");
@@ -41,8 +40,8 @@ function Login() {
           <input
             type="text"
             placeholder="電郵或手機號碼"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={account}
+            onChange={(e) => setAccount(e.target.value)}
             className="w-full border-b border-gray-300 py-2 focus:outline-none"
             required
           />
@@ -71,7 +70,7 @@ function Login() {
 
         <button
           type="submit"
-          className="w-full bg-orange-500 text-white py-2 rounded font-bold hover:bg-orange-600"
+          className="w-full bg-sky-500 text-white py-2 rounded font-bold hover:bg-sky-600"
         >
           開始購物吧！
         </button>
@@ -80,7 +79,7 @@ function Login() {
       <div className="text-center mt-10">
         <p className="text-lg font-bold">還不是會員？</p>
         <Link to="/SignFlow">
-          <button className="mt-2 px-6 py-2 border border-orange-500 text-orange-500 font-semibold rounded hover:bg-orange-50">
+          <button className="mt-2 px-6 py-2 border border-sky-500 text-sky-500 font-semibold rounded hover:bg-sky-50">
             註冊會員
           </button>
         </Link>

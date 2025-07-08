@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 ///login, /test, /get-token
 /// 登入、JWT、驗證類
 @RestController
-@RequestMapping("/user/auth")
+@RequestMapping("/api/user/auth")
 public class UserAuthController {
     private final UserService userService;
     public UserAuthController(UserService userService) {

@@ -10,6 +10,7 @@
 /frontend/lerna-debug.log*
 
 # === Backend (Spring Boot / Maven) ===
+/backend/target/
 /backend/backend/target/
 /backend/*.log
 /backend/.settings/
@@ -27,3 +28,26 @@
 # === OS ===
 .DS_Store
 Thumbs.db
+
+### Maven ###
+# Compiled class files and all build output
+/target/
+**/target/
+
+
+### Build ###
+/build/
+/out/
+
+### Log files ###
+*.log
+logs/
+
+### Other ###
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar

@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "useraddress")
+@Table(name = "customer_address")
 @Getter
 @Setter
 public class CCustomerAddress {
@@ -16,15 +16,16 @@ public class CCustomerAddress {
     private Long addressid;
 
     @ManyToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "customer_id")
     private CCustomer CCustomer;
 
     private String name;
     private String phone;
-    private String street;
-    private String city;
-    private String district;
-    private String zipcode;
+    private String address; // 完整地址
+//    private String street;
+//    private String city;
+//    private String district;
+//    private String zipcode;
     private Boolean isdefault;
     private LocalDateTime createat;
     private LocalDateTime updateat;

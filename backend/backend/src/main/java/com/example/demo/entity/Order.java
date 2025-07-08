@@ -1,6 +1,8 @@
+// CRM/backend/backend/src/main/java/com/example/demo/entity/Order.java
 package com.example.demo.entity;
 
 import com.example.demo.enums.OrderStatus;
+import com.example.demo.enums.PaymentMethod;
 import com.example.demo.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,20 +27,24 @@ public class Order {
     private Platform platform;
 
     @ManyToOne
-    @JoinColumn(name = "customerId")
+    @JoinColumn(name = "customer_id")
     private CCustomer CCustomer;
 
     private LocalDate orderdate;
 
-    private String paymethod;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "paymentstatus")
+    private PaymentStatus paymentStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "orderstatus")
     private OrderStatus orderStatus;
 
+    // ====================== 【以下為新增的欄位】 ======================
     @Enumerated(EnumType.STRING)
-    @Column(name = "paystatus")
-    private PaymentStatus paymentStatus;
+    @Column(name = "payment_method", nullable = false) // 設定為不允許 null
+    private PaymentMethod paymentMethod;
+    // ===============================================================
 
     @ManyToOne
     @JoinColumn(name = "addressid")
@@ -47,6 +53,16 @@ public class Order {
     private LocalDateTime createat;
     private LocalDateTime updateat;
 
+    // 新增總金額欄位
+    @Column(name = "total_amount") // 請在資料庫中新增此欄位
+    private Double totalAmount; // 假設訂單總金額是 Double
+
+    // ====================== 【以下為新增的欄位】 ======================
+    @Column(name = "merchant_trade_no", unique = true) // 商家交易單號，設為唯一
+    private String merchantTradeNo;
+    // ===============================================================
+
+    //--------
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderDetail> orderDetails = new ArrayList<>();
 

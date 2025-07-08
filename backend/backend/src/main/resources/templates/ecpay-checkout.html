@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Redirecting to ECPay...</title>
+</head>
+<body onload="document.getElementById('ecpay-form').submit();">
+<h1>正在將您導向綠界金流...</h1>
+
+<form id="ecpay-form" method="POST" th:action="${ecpayUrl}">
+    <input type="hidden" name="MerchantID" th:value="${aioCheckoutDto.merchantID}" />
+    <input type="hidden" name="MerchantTradeNo" th:value="${aioCheckoutDto.merchantTradeNo}" />
+    <input type="hidden" name="MerchantTradeDate" th:value="${aioCheckoutDto.merchantTradeDate}" />
+    <input type="hidden" name="PaymentType" th:value="${aioCheckoutDto.paymentType}" />
+    <input type="hidden" name="TotalAmount" th:value="${aioCheckoutDto.totalAmount}" />
+    <input type="hidden" name="TradeDesc" th:value="${aioCheckoutDto.tradeDesc}" />
+    <input type="hidden" name="ItemName" th:value="${aioCheckoutDto.itemName}" />
+    <input type="hidden" name="ReturnURL" th:value="${aioCheckoutDto.returnURL}" />
+    <input type="hidden" name="ChoosePayment" th:value="${aioCheckoutDto.choosePayment}" />
+    <input type="hidden" name="EncryptType" th:value="${aioCheckoutDto.encryptType}" />
+    <input type="hidden" name="CheckMacValue" th:value="${aioCheckoutDto.checkMacValue}" />
+</form>
+</body>
+</html>

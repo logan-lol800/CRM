@@ -13,6 +13,7 @@ import User from "./pages/User.jsx";
 import SignFlow from "./pages/SignFlow.jsx";
 import SignSuccess from "./pages/SignSuccess.jsx";
 import Cart from "./pages/Cart.jsx";
+import ECPayRedirect from "./components/ECPayRedirect.jsx";
 
 import BaseLayout from "./layout/BaseLayout";
 import cmsConfig from "./configs/cmsConfig";
@@ -20,7 +21,7 @@ import erpConfig from "./configs/erpConfig";
 import crmConfig from "./configs/crmConfig";
 import usersConfig from "./configs/usersConfig.jsx";
 import appListConfig from "./configs/appListConfig";
-import useUserStore from "./stores/useBackUserStore";
+import useBackUserStore from "./stores/useBackUserStore";
 import "antd/dist/reset.css";
 import BackLogin from "./backpages/BackLogin.jsx";
 //CRM相關頁面
@@ -31,6 +32,7 @@ import CRMOpportunities from "./backpages/crm/CRMOpportunities.jsx";
 import CRMOpportunityForm from "./backpages/crm/CRMOpportunityForm.jsx";
 import CRMCustomerForm from "./backpages/crm/CRMCustomerForm.jsx";
 import CRMCalendar from "./backpages/crm/CRMCalendar.jsx";
+import CRMCompany from "./backpages/crm/CRMCompany.jsx";
 //ERP相關頁面
 import ERPOrders from "./backpages/erp/ERPOrders.jsx";
 import ERPProducts from "./backpages/erp/ERPProducts.jsx";
@@ -38,6 +40,8 @@ import ERPStockLevels from "./backpages/erp/ERPStockLevels.jsx";
 import ERPPurchaseOrders from "./backpages/erp/ERPPurchaseOrders.jsx";
 import ERPCustomers from "./backpages/erp/ERPCustomers.jsx";
 import ERPDashboard from "./backpages/erp/ERPDashboard.jsx";
+import ERPOrderForm from "./backpages/erp/ERPOrderForm.jsx";
+import ERPNewOrderForm from "./backpages/erp/ERPNewOrderForm.jsx";
 import ERPReturns from "./backpages/erp/ERPReturns.jsx";
 import Finance from "./backpages/erp/Finance.jsx";
 import Inventory from "./backpages/erp/Inventory.jsx";
@@ -48,8 +52,12 @@ import CouponForm from "./backpages/erp/CouponForm.jsx"; // 取消註解
 // 使用者角色和權限
 import UsersManage from "./backpages/users/usersManage.jsx";
 import UsersLogs from "./backpages/users/usersLogs.jsx";
+import UsersEdit from "./backcomponents/user/usersEdit.jsx";
+import UsersMessage from "./backpages/users/usersMessage.jsx";
+import UsersRegister from "./backcomponents/user/usersRegister.jsx";
+import UserMessageChat from "./backcomponents/user/MessageChat.jsx";
 
-const user = useUserStore.getState().user;
+const user = useBackUserStore.getState().backUser;
 const role = user?.role || "admin";
 const getFilteredAppList = (role) =>
   appListConfig.filter((item) => item.roles.includes(role));
@@ -68,11 +76,12 @@ const router = createBrowserRouter([
       { path: "login", element: <Login /> },
       { path: "signFlow", element: <SignFlow /> },
       { path: "signsuccess", element: <SignSuccess /> },
-      { path: "product", element: <Product /> },
+      { path: "product/:id", element: <Product /> },
       { path: "cart", element: <Cart /> },
       { path: "funnyerror", element: <FunnyError /> },
       { path: "user", element: <User /> },
       { path: "news/:id", element: <NewsDetail /> },
+      {path: "ecpay-redirect", element: <ECPayRedirect />},
     ],
   },
   {path: "/backlogin", element: <BackLogin />}, // 後台登入頁面
@@ -121,6 +130,10 @@ const router = createBrowserRouter([
         path: "customer/:id",
         element: <CRMCustomerForm />,
       },
+      {
+        path: "company",
+        element: <CRMCompany />,
+      },
     ],
   },
   {
@@ -153,20 +166,12 @@ const router = createBrowserRouter([
         element: <ERPCustomers />,
       },
       {
-        path: "sales/returns",
-        element: <ERPReturns />,
+        path: "sales/orders/:id",
+        element: <ERPOrderForm />,
       },
       {
-        path: "finance",
-        element: <Finance />,
-      },
-      {
-        path: "inventory",
-        element: <Inventory />,
-      },
-      {
-        path: "sales",
-        element: <Sales />,
+        path: "sales/orders/new",
+        element: <ERPNewOrderForm />,
       },
       // Coupon 路由
       { path: "coupons", element: <CouponManage /> },
@@ -190,6 +195,22 @@ const router = createBrowserRouter([
         {
           path: "logs",
           element: <UsersLogs />,
+        },
+        {
+          path: "management/edit/:account",
+          element: <UsersEdit />,
+        },
+        {
+          path: "message",
+          element: <UsersMessage />,
+        },
+        {
+          path: "management/register",
+          element: <UsersRegister />,
+        },
+        {
+          path: "message/:messageId",
+          element: <UserMessageChat />,
         },
       ],
   },

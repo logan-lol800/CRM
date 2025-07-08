@@ -1,60 +1,82 @@
 import { create } from 'zustand';
 import axiosInstance from '../api/axiosFrontend';
 
-const useUserStore = create((set) => {
-  const storedToken = localStorage.getItem('token');
-  const storedUser = localStorage.getItem('user');
+// 從 localStorage 初始化
+const storedToken = localStorage.getItem('token');
+const storedUser = localStorage.getItem('user');
 
-  if (storedToken) {
-    axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-  }
+// 設定初始 axios header
+if (storedToken) {
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+}
 
-  return {
-    user: storedUser ? JSON.parse(storedUser) : null,
-    token: storedToken || null,
-    isAuthenticated: !!storedToken,
+const setTokenHeader = (token) => {
+  axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+};
 
-    login: async (credentials) => {
-      try {
-        const response = await axiosInstance.post('/auth/login', credentials);
-        const { token, user } = response.data;
+const clearTokenHeader = () => {
+  delete axiosInstance.defaults.headers.common['Authorization'];
+};
 
+const useUserStore = create((set) => ({
+  user: storedUser ? JSON.parse(storedUser) : null,
+  token: storedToken || null,
+  isAuthenticated: !!storedToken,
 
-        // 儲存 token 和 user 到 localStorage
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+  login: async (credentials) => {
+    try {
+      const response = await axiosInstance.post('/customer/auth/login', credentials);
+      const {
+        token,
+        account,
+        customerName,
+        email,
+        birthday,
+        address,
+      } = response.data;
 
-        // 設定 axios header
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const user = { account, customerName, email, birthday, address };
 
-        set({ user, token, isAuthenticated: true });
-      } catch (error) {
-        console.error('Login failed:', error);
-        throw error;
-      }
-    },
+      // 儲存 token 和 user
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
 
-    logout: () => {
-      // 清除 axios header
-      delete axiosInstance.defaults.headers.common['Authorization'];
+      // 設定 header
+      setTokenHeader(token);
 
-      // 清除 localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // 更新狀態
+      set({ user, token, isAuthenticated: true });
+    } catch (error) {
+      console.error('Login failed:', error);
+      throw error.response?.data?.message || '登入失敗';
+    }
+  },
 
-      set({ user: null, token: null, isAuthenticated: false });
-    },
+  logout: () => {
+    clearTokenHeader();
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    set({ user: null, token: null, isAuthenticated: false });
+  },
 
-    fetchProfile: async () => {
-      try {
-        const response = await axiosInstance.get('/auth/profile');
-        set({ user: response.data });
-        localStorage.setItem('user', JSON.stringify(response.data));
-      } catch (error) {
-        console.error('Fetch profile failed:', error);
-      }
-    },
-  };
-});
+  fetchProfile: async () => {
+    try {
+      const response = await axiosInstance.get('/customer/auth/profile');
+      const {
+        account,
+        customerName,
+        email,
+        birthday,
+        address,
+      } = response.data;
+
+      const user = { account, customerName, email, birthday, address };
+      set({ user });
+      localStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      console.error('Fetch profile failed:', error);
+    }
+  },
+}));
 
 export default useUserStore;

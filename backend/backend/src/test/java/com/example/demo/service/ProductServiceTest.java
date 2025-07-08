@@ -10,7 +10,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.example.demo.dto.ProductResponseDTO;
+import com.example.demo.dto.erp.ProductCreateDTO;
+import com.example.demo.dto.erp.ProductResponseDTO;
+import com.example.demo.dto.erp.ProductUpdateDTO;
+import com.example.demo.entity.ProductCategory;
+import com.example.demo.entity.Unit;
+import com.example.demo.repository.ProductCategoryRepository;
+import com.example.demo.repository.UnitRepository;
+import com.example.demo.service.erp.ProductService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -35,40 +42,66 @@ class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
 
+    @Mock
+    private ProductCategoryRepository categoryRepository;
+
+    @Mock
+    private UnitRepository unitRepository;
+
     @InjectMocks
     private ProductService productService;
+
 
     @Test
     void testCreateProductSuccess(){
          // 1. 準備 (Arrange)
         // 模擬一個要被儲存的 Product 物件
-        Product productToSave = new Product();
-        productToSave.setProductCode("TEST001");
-        productToSave.setName("測試商品");
-        productToSave.setUnitId(1L);
-        productToSave.setBasePrice(new BigDecimal("100.00"));
-        productToSave.setTaxType("TAXABLE");
-        productToSave.setCreatedBy(1L);
-        productToSave.setUpdatedBy(1L);
+        ProductCreateDTO productCreateDTO = new ProductCreateDTO();
+        productCreateDTO.setProductCode("TEST001");
+        productCreateDTO.setName("測試商品");
+        productCreateDTO.setCategoryId(1L);
+        productCreateDTO.setUnitId(1L);
+        productCreateDTO.setBasePrice(new BigDecimal("100.00"));
+        productCreateDTO.setTaxType("TAXABLE");
+        productCreateDTO.setCostMethod("AVERAGE");
+
+
+        Unit mockUnit = new Unit();
+        mockUnit.setUnitId(1L);
+        mockUnit.setName("個");
+
+        ProductCategory mockCategory = new ProductCategory();
+        mockCategory.setCategoryId(1L);
+        mockCategory.setName("測試分類");
+
 
         // 模擬儲存成功後，資料庫回傳的 Product 物件 (多了 ID 和時間)
         Product savedProduct = new Product();
-        savedProduct.setProductId(1L); // 模擬資料庫產生的 ID
+        savedProduct.setProductId(1L);
         savedProduct.setProductCode("TEST001");
         savedProduct.setName("測試商品");
+        savedProduct.setUnit(mockUnit);
+        savedProduct.setCategory(mockCategory);
+
 
         // 設定 Mockito：當 productRepository.save() 方法被呼叫時，就回傳我們上面準備好的 savedProduct
+        when(productRepository.findByProductCode("TEST001")).thenReturn(Optional.empty());
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(mockCategory));
+        when(unitRepository.findById(1L)).thenReturn(Optional.of(mockUnit));
         when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
+
 
         // 2. 執行 (Act)
         // 實際呼叫我們「即將要開發」的 createProduct 方法
-        Product result = productService.createProduct(productToSave);
+        ProductResponseDTO result = productService.createProductFromDTO(productCreateDTO, 1L);
+
 
         // 3. 斷言 (Assert)
         // 驗證回傳的結果是否如我們預期
-        assertNotNull(result); // 結果不應為空
-        assertEquals(1L, result.getProductId()); // 驗證 ID 是否為 1
-        assertEquals("TEST001", result.getProductCode()); // 驗證品號是否正確
+        assertNotNull(result);
+        assertEquals("TEST001", result.getProductCode());
+        assertEquals("測試商品", result.getName());
+
     }
 
     @Test
@@ -113,17 +146,35 @@ class ProductServiceTest {
         existingProduct.setProductId(productId);
         existingProduct.setName("舊品名");
 
-        Product updatedInfo = new Product(); // 模擬要更新的資訊
-        updatedInfo.setName("新品名");
-        updatedInfo.setBasePrice(new BigDecimal("150.00"));
+        ProductUpdateDTO updateDTO = new ProductUpdateDTO();
+        updateDTO.setName("新品名");
+        updateDTO.setBasePrice(new BigDecimal("150.00"));
+        updateDTO.setCategoryId(1L);
+        updateDTO.setUnitId(1L);
+        updateDTO.setTaxType("TAXABLE");
+        updateDTO.setIsSalable(true);
 
-        // 設定 Mockito：當 findById 被呼叫時，回傳我們模擬的已存在的產品
+        Unit mockUnit = new Unit();
+        mockUnit.setUnitId(1L);
+        mockUnit.setName("個");
+
+        ProductCategory mockCategory = new ProductCategory();
+        mockCategory.setCategoryId(1L);
+        mockCategory.setName("測試分類");
+
+        Product updatedProduct = new Product();
+        updatedProduct.setProductId(productId);
+        updatedProduct.setName("新品名");
+        updatedProduct.setBasePrice(new BigDecimal("150.00"));
+
         when(productRepository.findById(productId)).thenReturn(Optional.of(existingProduct));
-        // 設定 Mockito：當 save 被呼叫時，直接回傳傳入的物件
-        when(productRepository.save(any(Product.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(mockCategory));
+        when(unitRepository.findById(1L)).thenReturn(Optional.of(mockUnit));
+        when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
 
         // 2. 執行 (Act)
-        Product result = productService.updateProduct(productId, updatedInfo, 1L); // 假設由 user 1 更新
+        ProductResponseDTO result = productService.updateProductFromDTO(productId, updateDTO, 1L);
+
 
         // 3. 斷言 (Assert)
         assertNotNull(result);
@@ -136,18 +187,25 @@ class ProductServiceTest {
     void testUpdateProduct_NotFound_shouldThrowException() {
         // 1. 準備 (Arrange)
         Long nonExistentProductId = 99L;
-        Product updatedInfo = new Product();
-        updatedInfo.setName("新品名");
+        ProductUpdateDTO updateDTO = new ProductUpdateDTO();
+        updateDTO.setName("新品名");
+        updateDTO.setCategoryId(1L);
+        updateDTO.setUnitId(1L);
+        updateDTO.setTaxType("TAXABLE");
+        updateDTO.setIsSalable(true);
+
 
         // 設定 Mockito：當 findById 被呼叫時，回傳一個空的 Optional，表示找不到
         when(productRepository.findById(nonExistentProductId)).thenReturn(Optional.empty());
 
+
         // 2. 執行與斷言 (Act & Assert)
         // 驗證當呼叫 updateProduct 時，會拋出 RuntimeException (或更精確的自訂例外)
         assertThrows(RuntimeException.class, () -> {
-            productService.updateProduct(nonExistentProductId, updatedInfo, 1L);
+            productService.updateProductFromDTO(nonExistentProductId, updateDTO, 1L);
         });
     }
+
 
     @Test
     void testDeleteProduct_shouldSetIsActiveToFalse() {

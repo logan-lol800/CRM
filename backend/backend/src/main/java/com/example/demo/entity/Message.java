@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "message")
@@ -17,25 +19,30 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long messageId;
 
-    // 客戶留言內容
-    private String content;
+    // 問題主題（選填）
+    @Column(nullable = false)
+    private String questionTitle;
 
-    // 客戶留言時間
+    // 發起時間
     private LocalDateTime createdAt;
 
-    // 後台回覆內容（可空）
-    private String reply;
+    // 是否結案
+    private Boolean isResolved;
 
-    // 回覆時間（可空）
-    private LocalDateTime replyAt;
-
-    // 客戶發的留言
+    // 留言的顧客
     @ManyToOne
-    @JoinColumn(name = "customer_id")
+    @JoinColumn(name = "customer_id", nullable = false)
     private CCustomer cCustomer;
 
-    // 哪個後台人員回覆
-    @ManyToOne
-    @JoinColumn(name = "replied_by_user_id")
-    private User repliedBy;
+    // 一對多關聯回覆
+    @Builder.Default
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageReply> replies = new ArrayList<>();
+
+    // 紀錄發問時間
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.isResolved = false;
+    }
 }

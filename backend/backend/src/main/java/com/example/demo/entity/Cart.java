@@ -21,7 +21,7 @@ public class Cart {
 
     //------------
     @OneToOne
-    @JoinColumn(name = "userid")
+    @JoinColumn(name = "customer_id")
     private CCustomer CCustomer;
 
     //------------

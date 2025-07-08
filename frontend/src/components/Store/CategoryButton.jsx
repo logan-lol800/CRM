@@ -1,15 +1,18 @@
 // components/Store/CategoryButton.jsx
-import { FaIceCream } from "react-icons/fa";
-
-function CategoryButton({ label, onClick, active }) {
+function CategoryButton({ label, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow text-gray-800 w-full
-        ${active ? "bg-yellow-300 font-bold" : "bg-white hover:bg-yellow-100"}`}
+      className={`group relative px-3 pb-2 text-base font-medium transition-colors ${
+        active ? 'text-black' : 'text-black hover:text-gray-600'
+      }`}
     >
-      <FaIceCream className="text-orange-500" />
-      {label}
+      <span>{label}</span>
+      <span
+        className={`absolute left-0 -bottom-1 h-[3px] bg-logo-lightBlue transition-all duration-300 ${
+          active ? 'w-full' : 'w-0 group-hover:w-full'
+        }`}
+      ></span>
     </button>
   );
 }

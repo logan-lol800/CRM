@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class MessageCreateRequest {
-    private Long questionId;
+    private String questionTitle;
+    // 首則留言內容
     private String content;
 }
 

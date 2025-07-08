@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>正在轉至綠界物流選擇頁面...</title>
+</head>
+<body onload="document.getElementById('ecpay-form').submit();">
+<p>頁面跳轉中，請稍候...</p>
+
+<form id="ecpay-form" th:action="${logisticsUrl}" method="post">
+    <input type="hidden" th:each="entry : ${params}" th:name="${entry.key}" th:value="${entry.value}" />
+</form>
+
+</body>
+</html>
