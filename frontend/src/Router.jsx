@@ -92,6 +92,12 @@ const router = createBrowserRouter([
     ) : (
       <FunnyError />
     ),
+    children: [
+        // Coupon 路由
+        { path: "coupons", element: <CouponManage /> },
+        { path: "coupon/new", element: <CouponForm /> }, // 取消註解
+        { path: "coupon/edit/:couponId", element: <CouponForm /> }, // 取消註解
+    ],
   },
   {
     path: "/crm/*",
@@ -172,11 +178,7 @@ const router = createBrowserRouter([
       {
         path: "sales/orders/new",
         element: <ERPNewOrderForm />,
-      },
-      // Coupon 路由
-      { path: "coupons", element: <CouponManage /> },
-      { path: "coupon/new", element: <CouponForm /> }, // 取消註解
-      { path: "coupon/edit/:couponId", element: <CouponForm /> }, // 取消註解
+      }
     ],
   },
   {

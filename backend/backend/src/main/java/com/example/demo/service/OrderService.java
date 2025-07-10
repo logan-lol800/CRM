@@ -501,8 +501,13 @@ public class OrderService {
      */
     private BigDecimal calculateDiscountedPrice(BigDecimal originalPrice, CouponTemplate template) {
         if (template.getCouponType() == CouponType.PERCENTAGE) {
-            // 百分比折扣，例如 0.9 代表九折。使用 setScale確保結果為整數。
-            return originalPrice.multiply(template.getDiscountValue()).setScale(0, RoundingMode.HALF_UP);
+            // 【修正】將 discountValue 視為百分比 (例如 90)
+            // 1. 先將 discountValue 轉為小數 (例如 90 -> 0.90)
+            BigDecimal multiplier = template.getDiscountValue().divide(new BigDecimal("100"));
+
+            // 2. 將原始價格乘以這個小數，並四捨五入到整數
+            return originalPrice.multiply(multiplier).setScale(0, RoundingMode.HALF_UP);
+
         } else if (template.getCouponType() == CouponType.FIXED_AMOUNT) {
             // 固定金額折抵
             BigDecimal discountedPrice = originalPrice.subtract(template.getDiscountValue());

@@ -43,13 +43,13 @@ const CouponForm = () => {
             message.success({ content: '優惠券資料載入成功!', key: 'loadCoupon' });
           } else {
             message.error({ content: response.data.message || '獲取優惠券詳情失敗', key: 'loadCoupon' });
-            navigate('/erp/coupons'); // 獲取失敗則跳轉回列表頁
+            navigate('/cms/coupons'); // 獲取失敗則跳轉回列表頁
           }
         })
         .catch(error => {
           message.error({ content: '載入優惠券資料失敗，請檢查網路或聯繫管理員', key: 'loadCoupon' });
           console.error("獲取優惠券詳情失敗:", error);
-          navigate('/erp/coupons'); // 獲取失敗則跳轉回列表頁
+          navigate('/cms/coupons'); // 獲取失敗則跳轉回列表頁
         })
         .finally(() => {
           setLoading(false);
@@ -83,7 +83,7 @@ const CouponForm = () => {
       // 模擬 API 呼叫
       await new Promise(resolve => setTimeout(resolve, 1500));
       message.success({ content: `模擬編輯成功: ${payload.couponName}`, key: 'updateCoupon' });
-      navigate('/erp/coupons');
+      navigate('/cms/coupons');
     } else {
       // 新增邏輯
       try {
@@ -91,7 +91,7 @@ const CouponForm = () => {
         const response = await axiosBackend.post('/erp/coupons', payload);
         if (response.data && response.data.success) {
           message.success({ content: response.data.message || '優惠券建立成功!', key: 'createCoupon' });
-          navigate('/erp/coupons'); // 成功後跳轉回列表頁
+          navigate('/cms/coupons'); // 成功後跳轉回列表頁
         } else {
           message.error({ content: response.data.message || '建立優惠券失敗，請重試。', key: 'createCoupon' });
         }
@@ -218,7 +218,7 @@ const CouponForm = () => {
               <Button type="primary" htmlType="submit" loading={loading}>
                 {isEditMode ? '儲存變更' : '建立優惠券'}
               </Button>
-              <Button onClick={() => navigate('/erp/coupons')}>
+              <Button onClick={() => navigate('/cms/coupons')}>
                 取消
               </Button>
             </Space>

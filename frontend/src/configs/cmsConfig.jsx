@@ -2,7 +2,8 @@ import { DesktopOutlined ,
   UserOutlined,
   AppstoreOutlined,
   RobotOutlined,
-  BarChartOutlined
+  BarChartOutlined,
+  GiftOutlined // 新增圖示
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,6 +42,11 @@ const cmsConfig = {
         name: '系統管理',
         icon: <DesktopOutlined />,
       },
+      {
+          path: '/cms/coupons', // 優惠券列表頁路徑
+          name: '優惠券管理',
+          icon: <GiftOutlined />, // 使用禮物圖示
+        },
     ],
   },
   location: {

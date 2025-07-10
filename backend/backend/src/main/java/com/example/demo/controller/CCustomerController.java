@@ -2,15 +2,20 @@ package com.example.demo.controller;
 
 
 import com.example.demo.dto.request.CCustomerRegisterRequest;
+import com.example.demo.dto.request.RedeemCouponRequest;
 import com.example.demo.dto.request.UpdateCCustomerProfileRequest;
 import com.example.demo.dto.response.CCustomerProfileResponse;
 import com.example.demo.entity.CCustomer;
+import com.example.demo.exception.JwtAuthException;
 import com.example.demo.security.CheckCustomerActive;
 import com.example.demo.security.CheckJwt;
 import com.example.demo.security.JwtTool;
+import com.example.demo.security.JwtUserPayload;
 import com.example.demo.service.CCustomerService;
+import com.example.demo.service.CustomerCouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +30,11 @@ import java.util.Map;
 @RequestMapping("/api/customer")
 public class CCustomerController {
     private final CCustomerService cCustomerService;
-    public CCustomerController(CCustomerService cCustomerService) {
+    private final CustomerCouponService customerCouponService;
+
+    public CCustomerController(CCustomerService cCustomerService, CustomerCouponService customerCouponService) {
         this.cCustomerService = cCustomerService;
+        this.customerCouponService = customerCouponService;
     }
 
     @Operation(summary = "檢查電子郵件是否存在")
@@ -107,5 +115,40 @@ public class CCustomerController {
             @RequestParam String newPassword) {
         cCustomerService.resetPassword(token, newPassword);
         return ResponseEntity.ok("密碼已成功重設！");
+    }
+
+    /**
+     * 【改寫後】兌換優惠券的 API 端點
+     * POST /api/customer/coupons/redeem
+     */
+    @PostMapping("/coupons/redeem")
+    @CheckJwt // 【修改重點 1】加上這個註解來啟用 JWT 驗證
+    public ResponseEntity<?> redeemCoupon(@Valid @RequestBody RedeemCouponRequest redeemRequest, HttpServletRequest request) { //【修改重點 2】注入 HttpServletRequest
+        try {
+            // 【修改重點 3】呼叫輔助方法從 request 中獲取 customerId
+            Long customerId = getCustomerIdFromRequest(request);
+
+            customerCouponService.redeemCoupon(customerId, redeemRequest.getCode());
+            return ResponseEntity.ok().body(Map.of("success", true, "message", "優惠券兌換成功！"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    /**
+     * 【新增】從 HttpServletRequest 中獲取 customerId 的輔助方法
+     * 這個方法假設您的 @CheckJwt 切面會將 JwtUserPayload 物件存入 request 的 attribute 中。
+     */
+    private Long getCustomerIdFromRequest(HttpServletRequest request) {
+        // "userPayload" 這個鍵名必須與您在 JwtAspect 中設定的鍵名完全一致
+        Object payloadObject = request.getAttribute("userPayload");
+
+        if (!(payloadObject instanceof JwtUserPayload userPayload)) {
+            // 如果找不到或類型不對，拋出例外
+            throw new JwtAuthException("無法從請求中獲取有效的使用者資訊");
+        }
+
+        // 從 payload 中返回 customerId
+        return userPayload.getId();
     }
 }
